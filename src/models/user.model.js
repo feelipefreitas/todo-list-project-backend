@@ -44,11 +44,28 @@ userSchema.post('save', function(error, doc, next) {
     next();
 });
 
+//Hashing user password before registering
 userSchema.pre('save', async function(next) {
     const user = this;
     user.password = await bcrypt.hash(user.password, 8);
     next();
-})
+});
+
+//
+userSchema.statics.getUserByCredentials = async (username, email, password) => {
+    const user = await User.findOne({ $or: [
+        { username },
+        { email }
+    ]});
+    
+    if (!user) throw new Error('Incorrect username or password.');
+    
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    
+    if(!isPasswordMatch) throw new Error('Incorrect username or password.');
+    
+    return user;
+}
 
 const User = mongoose.model('User', userSchema);
 
