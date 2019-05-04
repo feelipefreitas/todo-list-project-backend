@@ -8,9 +8,12 @@ router.post('/users/register', async (req, res) => {
 
     try {
         await newUser.save();
+        
+        const newToken = newUser.generateAuthToken();
 
         res.status(201).send({
-            user: newUser
+            user: newUser,
+            token: newToken
         });
     } catch (e) {
         res.status(400).send({
@@ -22,7 +25,13 @@ router.post('/users/register', async (req, res) => {
 router.post('/users/login', async (req, res) => {
     try {
         const user = await User.getUserByCredentials(req.body.username, req.body.email, req.body.password);
-        res.send(user);
+        
+        const newToken = await user.generateAuthToken();
+        
+        res.send({
+            user,
+            token: newToken
+        });
     } catch (e) {
         res.status(400).send({
             error: e.message
