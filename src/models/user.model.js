@@ -34,6 +34,13 @@ const userSchema = new mongoose.Schema({
    }
 });
 
+userSchema.post('save', function(error, doc, next) {
+    if (error.name === 'MongoError' && error.code === 11000) 
+        next(new Error('The email is already in use'));
+    
+    next();
+});
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
