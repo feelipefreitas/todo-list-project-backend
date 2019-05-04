@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
    name: {
@@ -34,12 +35,20 @@ const userSchema = new mongoose.Schema({
    }
 });
 
+//Verifica depois de tentar salvat um novo usuario se o email já está cadastrado
+//Se estiver, vai ser enviado um erro
 userSchema.post('save', function(error, doc, next) {
     if (error.name === 'MongoError' && error.code === 11000) 
         next(new Error('The email is already in use'));
     
     next();
 });
+
+userSchema.pre('save', async function(next) {
+    const user = this;
+    user.password = await bcrypt.hash(user.password, 8);
+    next();
+})
 
 const User = mongoose.model('User', userSchema);
 
