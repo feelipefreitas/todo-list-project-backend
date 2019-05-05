@@ -4,6 +4,10 @@ const authMiddleware = require('../middleware/auth.middleware');
 
 const User = require('../models/user.model');
 
+router.get('/users/profile', authMiddleware, async (req, res) => {
+    res.send(req.user);
+});
+
 router.post('/users/register', async (req, res) => {
     const newUser = new User(req.body);
 

@@ -61,6 +61,19 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
+//.methods serve para instancias do objeto
+//.statics pode ser usado por quem ainda não é instancia do objeto
+
+userSchema.methods.toJSON = function() {
+    const user = this;
+    const userObject = user.toObject();
+    
+    delete userObject.password;
+    delete userObject.tokens;
+    
+    return userObject;
+}
+
 //Generates a new auth token based on user _id and adds to user tokens array 
 userSchema.methods.generateAuthToken = async function () {
     const user = this;
