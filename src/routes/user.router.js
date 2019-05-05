@@ -14,8 +14,8 @@ router.post('/users/register', async (req, res) => {
     try {
         await newUser.save();
 
-        const newToken = newUser.generateAuthToken();
-
+        const newToken = await newUser.generateAuthToken();
+        
         res.status(201).send({
             user: newUser,
             token: newToken
