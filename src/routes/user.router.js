@@ -13,7 +13,7 @@ router.post('/users/register', async (req, res) => {
 
     try {
         await newUser.save();
-        
+
         const newToken = newUser.generateAuthToken();
 
         res.status(201).send({
@@ -30,9 +30,9 @@ router.post('/users/register', async (req, res) => {
 router.post('/users/login', async (req, res) => {
     try {
         const user = await User.getUserByCredentials(req.body.username, req.body.email, req.body.password);
-        
+
         const newToken = await user.generateAuthToken();
-        
+
         res.send({
             user,
             token: newToken
@@ -45,26 +45,28 @@ router.post('/users/login', async (req, res) => {
 });
 
 router.post('/users/logout', authMiddleware, async (req, res) => {
-   try {
-       req.user.tokens = req.user.tokens.filter(token => token.token !== req.token);
-       await req.user.save();
-       
-       res.send();
-   } catch (e) {
-       res.status(500).send({ error: e.message });
-   } 
+    try {
+        req.user.tokens = req.user.tokens.filter(token => token.token !== req.token);
+        await req.user.save();
+
+        res.send();
+    } catch (e) {
+        res.status(500).send({
+            error: e.message
+        });
+    }
 });
 
 router.post('/users/logoutAll', authMiddleware, async (req, res) => {
-   try {
-       req.user.tokens = [];
-       await req.user.save();
-       res.send();
-   } catch (e) {
-       res.status(500).send({
-           error: e.message
-       });
-   } 
+    try {
+        req.user.tokens = [];
+        await req.user.save();
+        res.send();
+    } catch (e) {
+        res.status(500).send({
+            error: e.message
+        });
+    }
 });
 
 module.exports = router;

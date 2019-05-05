@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 
+// Esse middleware vai validar o token de aitenticação que está sendo enviado na request
+// Caso ele seja válido será incluido na request o usuario referente ao token e o token em si
+// Vai ser usado em todoas as requests que precisam do usuário já logado e autenticado no sistema
 const auth = async (req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '');

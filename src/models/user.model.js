@@ -54,23 +54,23 @@ userSchema.post('save', function (error, doc, next) {
 //Hashing user password before registering
 userSchema.pre('save', async function (next) {
     const user = this;
-    
-    if(user.isModified('password'))
+
+    if (user.isModified('password'))
         user.password = await bcrypt.hash(user.password, 8);
-        
+
     next();
 });
 
 //.methods serve para instancias do objeto
 //.statics pode ser usado por quem ainda não é instancia do objeto
 
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
-    
+
     delete userObject.password;
     delete userObject.tokens;
-    
+
     return userObject;
 }
 
@@ -81,11 +81,13 @@ userSchema.methods.generateAuthToken = async function () {
     const newToken = await jwt.sign({
         _id: user._id.toString()
     }, process.env.JWT_SECRET);
-    
-    user.tokens = user.tokens.concat({ token: newToken });  
-    
+
+    user.tokens = user.tokens.concat({
+        token: newToken
+    });
+
     await user.save();
-    
+
     return newToken;
 };
 
@@ -104,7 +106,7 @@ userSchema.statics.getUserByCredentials = async (username, email, password) => {
     if (!user) throw new Error('Incorrect credentials.');
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    
+
     if (!isPasswordMatch) throw new Error('Incorrect credentials.');
 
     return user;

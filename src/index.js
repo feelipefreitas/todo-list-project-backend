@@ -1,6 +1,7 @@
 const express = require('express');
 require('./db/mongoose');
 const userRouter = require('./routes/user.router');
+const taskRouter = require('./routes/task.router');
 
 const app = express();
 
@@ -9,6 +10,7 @@ app.use(express.json());
 
 //Routers
 app.use(userRouter);
+app.use(taskRouter);
 
 const port = process.env.PORT;
 app.listen(port, () => {
