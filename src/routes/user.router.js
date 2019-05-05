@@ -1,5 +1,6 @@
 const express = require('express');
 const router = new express.Router();
+const authMiddleware = require('../middleware/auth.middleware');
 
 const User = require('../models/user.model');
 
@@ -37,6 +38,29 @@ router.post('/users/login', async (req, res) => {
             error: e.message
         });
     }
+});
+
+router.post('/users/logout', authMiddleware, async (req, res) => {
+   try {
+       req.user.tokens = req.user.tokens.filter(token => token.token !== req.token);
+       await req.user.save();
+       
+       res.send();
+   } catch (e) {
+       res.status(500).send({ error: e.message });
+   } 
+});
+
+router.post('/users/logoutAll', authMiddleware, async (req, res) => {
+   try {
+       req.user.tokens = [];
+       await req.user.save();
+       res.send();
+   } catch (e) {
+       res.status(500).send({
+           error: e.message
+       });
+   } 
 });
 
 module.exports = router;
